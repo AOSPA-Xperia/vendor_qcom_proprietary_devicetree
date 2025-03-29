@@ -11,7 +11,11 @@ add-overlays = $(foreach o,$1,$(foreach b,$2,$(eval $(basename $b)-$(basename $o
 # kalama-overlays-dtb-y is list of DTBs and DTBOs to install when doing overlay-supported build
 # see DTB_TYPES from scripts/Makefile.dtbinst and install_dtbs from build.config.msm.common
 
-ifneq ($(CONFIG_ARCH_QTI_VM), y)
+SOMC_TARGET_PRODUCT := pdx234
+SOMC_TARGET_OPERATOR := generic
+SOMC_PLATFORM := yodo
+
+SOMC_PRODUCT_OPERATOR = $(SOMC_TARGET_PRODUCT)_$(SOMC_TARGET_OPERATOR)
 
 WAIPIO_BASE_DTB += waipio.dtb waipio-v2.dtb
 WAIPIO_APQ_BASE_DTB += waipiop.dtb waipiop-v2.dtb
@@ -69,12 +73,22 @@ NOAPQ_KALAMA_BOARDS += \
 		 kalama-baagha-cdp-overlay.dtbo \
 		 kalama-baagha-mtp-overlay.dtbo
 
+ifeq ($(SOMC_PRODUCT_OPERATOR),pdx234_generic)
+KALAMA_SOMC_BOARDS += \
+		kalama-yodo-pdx234_generic-overlay.dtbo
+endif
+ifeq ($(SOMC_PLATFORM),yodo)
+kalama-dtb-$(CONFIG_ARCH_KALAMA) += \
+	$(call add-overlays, $(KALAMA_SOMC_BOARDS),$(KALAMA_BASE_DTB))
+kalama-overlays-dtb-$(CONFIG_ARCH_KALAMA) += $(KALAMA_SOMC_BOARDS) $(KALAMA_BASE_DTB)
+else
 kalama-dtb-$(CONFIG_ARCH_KALAMA) += \
 	$(call add-overlays, $(KALAMA_BOARDS) $(NOAPQ_KALAMA_BOARDS),$(KALAMA_BASE_DTB))\
 	$(call add-overlays, $(KALAMA_BOARDS) $(APQ_KALAMA_BOARDS),$(KALAMA_APQ_BASE_DTB))
 kalama-overlays-dtb-$(CONFIG_ARCH_KALAMA) += $(KALAMA_BOARDS) $(NOAPQ_KALAMA_BOARDS) $(KALAMA_BASE_DTB) $(KALAMA_APQ_BASE_DTB)
 kalama_le-overlays-dtb-$(CONFIG_ARCH_KALAMA) += $(KALAMA_BOARDS) $(NOAPQ_KALAMA_BOARDS) $(KALAMA_BASE_DTB) $(KALAMA_APQ_BASE_DTB)
 kalama_lu-overlays-dtb-$(CONFIG_ARCH_KALAMA) += $(KALAMA_BOARDS) $(NOAPQ_KALAMA_BOARDS) $(KALAMA_BASE_DTB) $(KALAMA_APQ_BASE_DTB)
+endif
 dtb-y += $(kalama-dtb-y)
 
 CROW_BASE_DTB += crow.dtb
