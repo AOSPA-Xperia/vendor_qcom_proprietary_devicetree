@@ -11,6 +11,7 @@ add-overlays = $(foreach o,$1,$(foreach b,$2,$(eval $(basename $b)-$(basename $o
 # kalama-overlays-dtb-y is list of DTBs and DTBOs to install when doing overlay-supported build
 # see DTB_TYPES from scripts/Makefile.dtbinst and install_dtbs from build.config.msm.common
 
+ifneq ($(CONFIG_ARCH_QTI_VM), y)
 SOMC_TARGET_PRODUCT := pdx234
 SOMC_TARGET_OPERATOR := generic
 SOMC_PLATFORM := yodo
